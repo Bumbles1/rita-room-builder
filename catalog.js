@@ -37,6 +37,8 @@ function mk(geo, sx, sy, sz, x, y, z, c, extra) {
 export function bx(g, w, h, d, x, y, z, c, extra) { const m = mk(G.box, w, h, d, x, y + h / 2, z, c, extra); g.add(m); return m; }
 // cylinder: radius r, height h, bottom at y
 export function cy(g, r, h, x, y, z, c, extra) { const m = mk(G.cyl, r, h, r, x, y + h / 2, z, c, extra); g.add(m); return m; }
+// horizontal rod of length len, centred at (x, y, z), lying along the x or z axis
+export function rod(g, r, len, x, y, z, c, axis = 'x') { const m = mk(G.cyl, r, len, r, x, y, z, c); m.rotation[axis === 'x' ? 'z' : 'x'] = Math.PI / 2; g.add(m); return m; }
 // cone: radius r, height h, bottom at y
 export function cone(g, r, h, x, y, z, c, sides) { const m = mk(sides ? G.cone5 : G.cone, r, h, r, x, y + h / 2, z, c); g.add(m); return m; }
 // sphere centred at y, optional squash
@@ -89,7 +91,7 @@ function mattress(g, w, d, y, c) {
 function ladder(g, x, z, h, c, rotY = 0) {
   const l = new THREE.Group(); l.position.set(x, 0, z); l.rotation.y = rotY;
   bx(l, 0.04, h, 0.04, -0.18, 0, 0, c); bx(l, 0.04, h, 0.04, 0.18, 0, 0, c);
-  for (let y = 0.25; y < h - 0.1; y += 0.3) cy(l, 0.015, 0.36, 0, y, 0, c).rotation.z = Math.PI / 2;
+  for (let y = 0.25; y < h - 0.1; y += 0.3) rod(l, 0.015, 0.36, 0, y, 0, c, 'x');
   g.add(l); return l;
 }
 function rails(g, w, d, y, c, skipFootRight) {
@@ -123,7 +125,7 @@ function curtain(parent, w, h, c, y = 0) {
   const g = new THREE.Group(); parent.add(g);
   const n = Math.max(3, Math.round(w / 0.07)), sw = w / n;
   for (let i = 0; i < n; i++) bx(g, sw * 1.05, h, 0.025, -w / 2 + (i + 0.5) * sw, y, (i % 2 ? 0.012 : -0.012), i % 2 ? shade(c, -0.06) : c);
-  cy(g, 0.012, w + 0.06, 0, y + h, 0, METAL).rotation.z = Math.PI / 2;
+  rod(g, 0.012, w + 0.06, 0, y + h, 0, METAL, 'x');
   return g;
 }
 function textPlane(g, w, h, x, y, z, text, bg, fg) {
@@ -164,7 +166,7 @@ export const ITEMS = [
   { id: 'cabin-bed', tuck: true, name: 'Cabin bed (drawers)', emoji: '🗄️', cat: 'beds', size: { w: 1.0, h: 1.0, d: 2.0 }, color: '#ff9ff3', res: 'wd',
     build(g, s, c) {
       bx(g, s.w, 0.7, s.d, 0, 0, 0, c);
-      for (let i = 0; i < 3; i++) { bx(g, 0.02, 0.28, s.d / 3 - 0.06, s.w / 2 + 0.005, 0.08, -s.d / 2 + (i + 0.5) * s.d / 3, shade(c, 0.15)); bx(g, 0.02, 0.28, s.d / 3 - 0.06, s.w / 2 + 0.005, 0.4, -s.d / 2 + (i + 0.5) * s.d / 3, shade(c, 0.15)); cy(g, 0.01, 0.12, s.w / 2 + 0.03, 0.2, -s.d / 2 + (i + 0.5) * s.d / 3, METAL).rotation.x = Math.PI / 2; }
+      for (let i = 0; i < 3; i++) { bx(g, 0.02, 0.28, s.d / 3 - 0.06, s.w / 2 + 0.005, 0.08, -s.d / 2 + (i + 0.5) * s.d / 3, shade(c, 0.15)); bx(g, 0.02, 0.28, s.d / 3 - 0.06, s.w / 2 + 0.005, 0.4, -s.d / 2 + (i + 0.5) * s.d / 3, shade(c, 0.15)); rod(g, 0.01, 0.12, s.w / 2 + 0.03, 0.2, -s.d / 2 + (i + 0.5) * s.d / 3, METAL, 'z'); }
       mattress(g, s.w - 0.06, s.d - 0.06, 0.7, shade(c, -0.25)); bx(g, s.w, 0.35, 0.05, 0, 0.7, -s.d / 2 + 0.025, WOOD);
     } },
   { id: 'canopy-bed', name: 'Canopy bed', emoji: '👑', cat: 'beds', size: { w: 1.0, h: 1.9, d: 2.0 }, color: '#e6d7ff', res: 'wd',
@@ -250,15 +252,15 @@ export const ITEMS = [
   { id: 'wardrobe', tuck: true, name: 'Wardrobe', emoji: '🚪', cat: 'storage', size: { w: 1.0, h: 2.0, d: 0.6 }, color: '#ffffff', res: 'wh',
     build(g, s, c) { bx(g, s.w, s.h, s.d, 0, 0, 0, c); bx(g, s.w / 2 - 0.02, s.h - 0.12, 0.02, -s.w / 4 - 0.005, 0.08, s.d / 2 + 0.005, shade(c, -0.05)); bx(g, s.w / 2 - 0.02, s.h - 0.12, 0.02, s.w / 4 + 0.005, 0.08, s.d / 2 + 0.005, shade(c, -0.05)); cy(g, 0.01, 0.12, -0.04, s.h / 2, s.d / 2 + 0.03, METAL); cy(g, 0.01, 0.12, 0.04, s.h / 2, s.d / 2 + 0.03, METAL); } },
   { id: 'drawers', tuck: true, name: 'Chest of drawers', emoji: '🗄️', cat: 'storage', size: { w: 0.8, h: 0.9, d: 0.45 }, color: '#54a0ff', res: 'wh',
-    build(g, s, c) { bx(g, s.w, s.h, s.d, 0, 0, 0, c); const n = 3, dh = (s.h - 0.08) / n; for (let i = 0; i < n; i++) { bx(g, s.w - 0.06, dh - 0.03, 0.02, 0, 0.05 + i * dh, s.d / 2 + 0.005, shade(c, 0.15)); cy(g, 0.01, 0.14, 0, 0.05 + i * dh + dh / 2, s.d / 2 + 0.03, METAL).rotation.z = Math.PI / 2; } } },
+    build(g, s, c) { bx(g, s.w, s.h, s.d, 0, 0, 0, c); const n = 3, dh = (s.h - 0.08) / n; for (let i = 0; i < n; i++) { bx(g, s.w - 0.06, dh - 0.03, 0.02, 0, 0.05 + i * dh, s.d / 2 + 0.005, shade(c, 0.15)); rod(g, 0.01, 0.14, 0, 0.05 + i * dh + dh / 2, s.d / 2 + 0.03, METAL, 'x'); } } },
   { id: 'toybox', tuck: true, name: 'Toy box', emoji: '🧸', cat: 'storage', size: { w: 0.8, h: 0.5, d: 0.45 }, color: '#1dd1a1', res: 'wd',
     build(g, s, c) { bx(g, s.w, s.h - 0.06, s.d, 0, 0, 0, c); bx(g, s.w + 0.02, 0.06, s.d + 0.02, 0, s.h - 0.06, 0, shade(c, -0.12)); sp(g, 0.08, s.w / 2 - 0.15, s.h + 0.05, 0, '#feca57'); } },
   { id: 'cube-shelf-3', tuck: true, name: 'Big cube shelf', emoji: '🔲', cat: 'storage', size: { w: 1.17, h: 1.17, d: 0.35 }, color: '#ffffff', res: 'wh',
     build(g, s, c) { cubeUnit(g, s, c, false); } },
   { id: 'side-table', tuck: true, name: 'Bedside table', emoji: '🪑', cat: 'storage', size: { w: 0.4, h: 0.5, d: 0.4 }, color: '#ffffff', res: '',
-    build(g, s, c) { bx(g, 0.4, 0.5, 0.4, 0, 0, 0, c); bx(g, 0.34, 0.14, 0.02, 0, 0.3, 0.2, shade(c, 0.1)); cy(g, 0.01, 0.1, 0, 0.37, 0.22, METAL).rotation.z = Math.PI / 2; cy(g, 0.08, 0.02, 0, 0.5, 0, '#54a0ff'); cy(g, 0.02, 0.2, 0, 0.52, 0, WHITE); cone(g, 0.1, 0.12, 0, 0.7, 0, '#feca57'); } },
+    build(g, s, c) { bx(g, 0.4, 0.5, 0.4, 0, 0, 0, c); bx(g, 0.34, 0.14, 0.02, 0, 0.3, 0.2, shade(c, 0.1)); rod(g, 0.01, 0.1, 0, 0.37, 0.22, METAL, 'x'); cy(g, 0.08, 0.02, 0, 0.5, 0, '#54a0ff'); cy(g, 0.02, 0.2, 0, 0.52, 0, WHITE); cone(g, 0.1, 0.12, 0, 0.7, 0, '#feca57'); } },
   { id: 'hooks', name: 'Hooks', emoji: '🪝', cat: 'storage', mount: 'wall', y: 1.3, size: { w: 0.6, h: 0.12, d: 0.08 }, color: '#c69c6d', res: 'w',
-    build(g, s, c) { bx(g, s.w, 0.08, 0.02, 0, 0.02, -0.03, c); const n = Math.max(2, Math.round(s.w / 0.15)); for (let i = 0; i < n; i++) { const x = -s.w / 2 + (i + 0.5) * s.w / n; cy(g, 0.01, 0.06, x, 0.04, 0, METAL).rotation.x = Math.PI / 2; } sp(g, 0.07, -s.w / 2 + 0.5 * s.w / n, -0.1, 0.03, '#ff6b6b', null, 0.09, 0.05); } },
+    build(g, s, c) { bx(g, s.w, 0.08, 0.02, 0, 0.02, -0.03, c); const n = Math.max(2, Math.round(s.w / 0.15)); for (let i = 0; i < n; i++) { const x = -s.w / 2 + (i + 0.5) * s.w / n; rod(g, 0.01, 0.06, x, 0.04, 0, METAL, 'z'); } sp(g, 0.07, -s.w / 2 + 0.5 * s.w / n, -0.1, 0.03, '#ff6b6b', null, 0.09, 0.05); } },
   { id: 'wall-cube', name: 'Wall cube', emoji: '🔳', cat: 'storage', mount: 'wall', y: 1.2, size: { w: 0.4, h: 0.4, d: 0.3 }, color: '#feca57', res: 'wh',
     build(g, s, c) { const t = 0.02; bx(g, s.w, t, s.d, 0, 0, 0, c); bx(g, s.w, t, s.d, 0, s.h - t, 0, c); bx(g, t, s.h, s.d, -s.w / 2 + t / 2, 0, 0, c); bx(g, t, s.h, s.d, s.w / 2 - t / 2, 0, 0, c); bx(g, s.w, s.h, t, 0, 0, -s.d / 2 + t / 2, shade(c, 0.1)); sp(g, Math.min(s.w, s.h) * 0.25, 0, Math.min(s.w, s.h) * 0.27, 0, '#1dd1a1'); } },
 
@@ -268,13 +270,24 @@ export const ITEMS = [
   { id: 'crash-mat', soft: true, name: 'Crash mat', emoji: '🟦', cat: 'play', size: { w: 1.2, h: 0.12, d: 1.2 }, color: '#54a0ff', res: 'wd',
     build(g, s, c) { bx(g, s.w, s.h, s.d, 0, 0, 0, c); bx(g, s.w - 0.06, 0.01, s.d - 0.06, 0, s.h, 0, shade(c, 0.15)); } },
   { id: 'monkey-bars', name: 'Monkey bars', emoji: '🐒', cat: 'play', mount: 'ceiling', size: { w: 0.6, h: 0.5, d: 2.0 }, color: '#ff6b6b', res: 'hd',
-    build(g, s, c) { for (const sx of [-1, 1]) { bx(g, 0.04, 0.04, s.d, sx * s.w / 2, 0, 0, METAL); for (const sz of [-1, 1]) cy(g, 0.02, s.h - 0.04, sx * s.w / 2, 0.04, sz * (s.d / 2 - 0.05), METAL); } for (let z = -s.d / 2 + 0.15; z < s.d / 2 - 0.05; z += 0.3) cy(g, 0.017, s.w, 0, 0.02, z, c).rotation.z = Math.PI / 2; } },
+    build(g, s, c) { for (const sx of [-1, 1]) { bx(g, 0.04, 0.04, s.d, sx * s.w / 2, 0, 0, METAL); for (const sz of [-1, 1]) cy(g, 0.02, s.h - 0.04, sx * s.w / 2, 0.04, sz * (s.d / 2 - 0.05), METAL); } for (let z = -s.d / 2 + 0.15; z < s.d / 2 - 0.05; z += 0.3) rod(g, 0.017, s.w, 0, 0.02, z, c, 'x'); } },
   { id: 'swing', name: 'Swing', emoji: '🎠', cat: 'play', mount: 'ceiling', size: { w: 0.5, h: 2.0, d: 0.25 }, color: '#feca57', res: 'wh',
     build(g, s, c) { bx(g, s.w, 0.04, 0.22, 0, 0, 0, c); for (const sx of [-1, 1]) cy(g, 0.012, s.h - 0.04, sx * (s.w / 2 - 0.03), 0.04, 0, ROPE); } },
   { id: 'rope-ladder', name: 'Rope ladder', emoji: '🪢', cat: 'play', mount: 'ceiling', size: { w: 0.4, h: 2.2, d: 0.06 }, color: '#c69c6d', res: 'h',
-    build(g, s, c) { for (const sx of [-1, 1]) cy(g, 0.012, s.h, sx * 0.18, 0, 0, ROPE); for (let y = 0.15; y < s.h - 0.1; y += 0.3) cy(g, 0.018, 0.4, 0, y, 0, c).rotation.z = Math.PI / 2; } },
+    build(g, s, c) { for (const sx of [-1, 1]) cy(g, 0.012, s.h, sx * 0.18, 0, 0, ROPE); for (let y = 0.15; y < s.h - 0.1; y += 0.3) rod(g, 0.018, 0.4, 0, y, 0, c, 'x'); } },
   { id: 'cargo-net', name: 'Cargo net', emoji: '🕸️', cat: 'play', mount: 'wall', y: 0.2, size: { w: 1.2, h: 1.8, d: 0.06 }, color: '#d8c48e', res: 'wh',
-    build(g, s, c) { const st = 0.2; for (let x = -s.w / 2; x <= s.w / 2 + 0.001; x += st) cy(g, 0.012, s.h, x, 0, 0, c); for (let y = 0; y <= s.h + 0.001; y += st) cy(g, 0.012, s.w, 0, y, 0, c).rotation.z = Math.PI / 2; } },
+    build(g, s, c) { const st = 0.2; for (let x = -s.w / 2; x <= s.w / 2 + 0.001; x += st) cy(g, 0.012, s.h, x, 0, 0, c); for (let y = 0; y <= s.h + 0.001; y += st) rod(g, 0.012, s.w, 0, y, 0, c, 'x'); } },
+  { id: 'flat-net', name: 'Horizontal net', emoji: '🕸️', cat: 'play', mount: 'ceiling', collideH: 0.1, size: { w: 1.6, h: 0.9, d: 1.6 }, color: '#d8c48e', res: 'whd',
+    build(g, s, c) {
+      // a climbing net stretched flat at the bottom of the box, hung from the ceiling by a rope at each corner
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) cy(g, 0.012, s.h, sx * s.w / 2, 0, sz * s.d / 2, ROPE);
+      const edge = shade(c, -0.2);
+      for (const sz of [-1, 1]) rod(g, 0.022, s.w, 0, 0, sz * s.d / 2, edge, 'x');
+      for (const sx of [-1, 1]) rod(g, 0.022, s.d, sx * s.w / 2, 0, 0, edge, 'z');
+      const st = 0.18, nx = Math.max(2, Math.round(s.w / st)), nz = Math.max(2, Math.round(s.d / st));
+      for (let i = 1; i < nx; i++) rod(g, 0.01, s.d, -s.w / 2 + i * s.w / nx, 0, 0, c, 'z');
+      for (let j = 1; j < nz; j++) rod(g, 0.01, s.w, 0, 0, -s.d / 2 + j * s.d / nz, c, 'x');
+    } },
   { id: 'trampoline', tuck: true, name: 'Mini trampoline', emoji: '🤸', cat: 'play', size: { w: 1.0, h: 0.3, d: 1.0 }, color: '#5f27cd', res: 'w',
     build(g, s, c) { const r = s.w / 2; cy(g, r, 0.04, 0, s.h - 0.04, 0, DARK); tor(g, r, 0.04, 0, s.h - 0.02, 0, c, Math.PI / 2); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; cy(g, 0.015, s.h - 0.04, Math.cos(a) * (r - 0.05), 0, Math.sin(a) * (r - 0.05), METAL); } } },
   { id: 'teepee', tuck: true, name: 'Teepee', emoji: '⛺', cat: 'play', size: { w: 1.2, h: 1.6, d: 1.2 }, color: '#ff9ff3', res: 'wh',
@@ -288,7 +301,7 @@ export const ITEMS = [
   { id: 'rings', name: 'Gym rings', emoji: '⭕', cat: 'play', mount: 'ceiling', size: { w: 0.5, h: 2.0, d: 0.15 }, color: '#c69c6d', res: 'h',
     build(g, s, c) { for (const sx of [-1, 1]) { cy(g, 0.012, s.h - 0.2, sx * 0.25, 0.2, 0, ROPE); tor(g, 0.1, 0.015, sx * 0.25, 0.1, 0, c); } } },
   { id: 'stall-bars', name: 'Wall ladder bars', emoji: '🪜', cat: 'play', mount: 'wall', y: 0, size: { w: 0.9, h: 2.2, d: 0.14 }, color: '#c69c6d', res: 'wh',
-    build(g, s, c) { for (const sx of [-1, 1]) bx(g, 0.05, s.h, s.d, sx * (s.w / 2 - 0.025), 0, 0, c); for (let y = 0.2; y < s.h - 0.1; y += 0.25) cy(g, 0.018, s.w - 0.05, 0, y, 0.02, shade(c, 0.1)).rotation.z = Math.PI / 2; } },
+    build(g, s, c) { for (const sx of [-1, 1]) bx(g, 0.05, s.h, s.d, sx * (s.w / 2 - 0.025), 0, 0, c); for (let y = 0.2; y < s.h - 0.1; y += 0.25) rod(g, 0.018, s.w - 0.05, 0, y, 0.02, shade(c, 0.1), 'x'); } },
   { id: 'balance-beam', name: 'Balance beam', emoji: '🤸', cat: 'play', size: { w: 0.15, h: 0.3, d: 2.0 }, color: '#feca57', res: 'd',
     build(g, s, c) { bx(g, s.w, 0.08, s.d, 0, s.h - 0.08, 0, c); for (const sz of [-1, 1]) bx(g, 0.3, s.h - 0.08, 0.08, 0, 0, sz * (s.d / 2 - 0.2), WOOD); } },
   { id: 'tunnel', tuck: true, name: 'Crawl tunnel', emoji: '🐛', cat: 'play', size: { w: 0.5, h: 0.5, d: 1.2 }, color: '#ff9f43', res: 'd',
@@ -339,7 +352,7 @@ export const ITEMS = [
   { id: 'pet-bed', tuck: true, name: 'Pet bed', emoji: '🐾', cat: 'decor', size: { w: 0.55, h: 0.18, d: 0.55 }, color: '#8395a7', res: 'w',
     build(g, s, c) { tor(g, s.w / 2 - 0.08, 0.08, 0, 0.08, 0, c, Math.PI / 2); cy(g, s.w / 2 - 0.1, 0.05, 0, 0, 0, shade(c, 0.25)); } },
   { id: 'bunting', soft: true, name: 'Bunting flags', emoji: '🎏', cat: 'decor', mount: 'wall', y: 2.2, size: { w: 2.0, h: 0.25, d: 0.03 }, color: '#ff6b6b', res: 'w',
-    build(g, s, c) { cy(g, 0.004, s.w, 0, s.h, 0, DARK).rotation.z = Math.PI / 2; const n = Math.round(s.w / 0.18); for (let i = 0; i < n; i++) { const x = -s.w / 2 + (i + 0.5) * s.w / n; const f = cone(g, 0.08, 0.18, 0, 0, 0, i % 2 ? c : FUN[(i + 2) % FUN.length]); f.scale.z = 0.01; f.position.set(x, s.h - 0.09, 0); f.rotation.x = Math.PI; } } },
+    build(g, s, c) { rod(g, 0.004, s.w, 0, s.h, 0, DARK, 'x'); const n = Math.round(s.w / 0.18); for (let i = 0; i < n; i++) { const x = -s.w / 2 + (i + 0.5) * s.w / n; const f = cone(g, 0.08, 0.18, 0, 0, 0, i % 2 ? c : FUN[(i + 2) % FUN.length]); f.scale.z = 0.01; f.position.set(x, s.h - 0.09, 0); f.rotation.x = Math.PI; } } },
 ];
 
 // collision hints: `soft` never blocks anything (rugs, lights); `under` = height below which the item is open (loft beds, desks);

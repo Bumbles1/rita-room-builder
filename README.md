@@ -32,7 +32,8 @@ Wi-Fi if you use the Mac's IP address instead of localhost (touch drag and pinch
   room, Decorate. Tap a card to drop it in the room.
 - **Drag** anything. Floor things stack on top of each other (drop a mattress on a Tall frame to
   make a loft, put a desk underneath). Wall things slide along walls and jump between walls;
-  ceiling things (monkey bars, swing, rope ladder, gym rings, hanging chair) slide across the ceiling.
+  ceiling things (monkey bars, swing, rope ladder, gym rings, hanging chair, horizontal net) slide across the
+  ceiling; the net's *Hang down* slider sets how high up it is.
 - **Things stay where they fit**: furniture can't go through walls, into the wardrobe, into the door
   swing, or through other furniture. Things slide around each other instead, chairs still tuck under
   desks, and desks and beds still fit under a loft or tall frame. Rugs, mats and lights go anywhere.
