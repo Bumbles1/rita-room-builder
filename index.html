@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Rita's Room Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="logo">🏠 <span>Rita's Room Builder</span></div>
+    <div class="bar-group">
+      <button id="btn-undo" class="bar-btn" title="Undo (Ctrl+Z)">↶ Undo</button>
+      <button id="btn-redo" class="bar-btn" title="Redo">↷ Redo</button>
+    </div>
+    <div class="bar-group views">
+      <button class="bar-btn view-btn active" data-view="3d">🎥 3D</button>
+      <button class="bar-btn view-btn" data-view="top">🗺️ Top</button>
+      <button class="bar-btn view-btn" data-view="door">🚪 Door</button>
+    </div>
+    <div class="bar-group">
+      <button id="btn-room" class="bar-btn" title="Room settings and paint">🎨 Room</button>
+      <button id="btn-designs" class="bar-btn" title="Save and load designs">💾 Designs</button>
+      <button id="btn-photo" class="bar-btn" title="Save a photo">📸 Photo</button>
+      <button id="btn-help" class="bar-btn" title="How to play">❓</button>
+    </div>
+  </header>
+
+  <aside id="catalog">
+    <div class="panel-title">Add things ✨</div>
+    <nav id="cats"></nav>
+    <div id="items"></div>
+  </aside>
+
+  <main id="viewport">
+    <canvas id="c"></canvas>
+    <div id="hint" class="hint">Tap something in the list to add it, then drag it around 🖐️</div>
+  </main>
+
+  <aside id="inspector" class="hidden">
+    <div id="insp-content"></div>
+  </aside>
+
+  <!-- Room settings panel -->
+  <div id="room-panel" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h2>🎨 The room</h2><button class="close" data-close="room-panel">✕</button></div>
+      <div class="modal-body" id="room-body"></div>
+    </div>
+  </div>
+
+  <!-- Designs panel -->
+  <div id="designs-panel" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h2>💾 My designs</h2><button class="close" data-close="designs-panel">✕</button></div>
+      <div class="modal-body" id="designs-body"></div>
+    </div>
+  </div>
+
+  <!-- Help -->
+  <div id="help-panel" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h2>❓ How to play</h2><button class="close" data-close="help-panel">✕</button></div>
+      <div class="modal-body help">
+        <p>👆 <b>Tap a thing</b> in the list to put it in the room.</p>
+        <p>🖐️ <b>Drag it</b> to move it. Drop it on top of other things to stack them!</p>
+        <p>🔄 <b>Turn, resize and recolour</b> with the buttons and sliders that pop up when you pick something.</p>
+        <p>🧱 <b>Build your own bunk bed:</b> add a <i>Tall frame</i>, drop a <i>Mattress</i> on top, add a <i>Ladder</i> and a <i>Safety rail</i>. Put a <i>Desk</i> or <i>Cushion nook</i> underneath.</p>
+        <p>📐 <b>Fold-down desk:</b> it lives on the wall. Use the switch to fold it up or down.</p>
+        <p>🧗 <b>Play stuff:</b> climbing walls and cargo nets stick to walls, monkey bars, swings and ropes hang from the ceiling. Drag them along the wall or ceiling.</p>
+        <p>🪟 <b>Share the room:</b> use a curtain, shelf or half wall to split it. Turn on the halfway line in 🎨 Room to see each half.</p>
+        <p>🎥 <b>Look around:</b> drag on empty space to spin the room, pinch or scroll to zoom. Try the Top and Door views.</p>
+        <p>⌨️ Keyboard: <kbd>R</kbd> turn, arrows nudge, <kbd>Delete</kbd> remove, <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
