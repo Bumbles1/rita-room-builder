@@ -8,7 +8,10 @@ nothing to install or build.
 
 ## Run it
 
-The browser needs the files served over http (module scripts don't load from `file://`).
+**Live:** https://bumbles1.github.io/rita-room-builder/ (GitHub Pages from the `main` branch of
+`Bumbles1/rita-room-builder`; pushing to `main` republishes it in about a minute).
+
+To run it locally instead: the browser needs the files served over http (module scripts don't load from `file://`).
 From this folder:
 
 ```bash
