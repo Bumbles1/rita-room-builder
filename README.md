@@ -11,6 +11,11 @@ nothing to install or build.
 **Live:** https://bumbles1.github.io/rita-room-builder/ (GitHub Pages from the `main` branch of
 `Bumbles1/rita-room-builder`; pushing to `main` republishes it in about a minute).
 
+**Install it on a Chromebook (or any Chrome):** open the live link, then use the install icon at the
+right end of the address bar (or ⋮ → *Cast, save and share* → *Install page as app*). It gets its
+own icon on the shelf and opens without the browser bars. `manifest.webmanifest` and `icons/` make
+this work; there is no service worker, so it still needs internet to load.
+
 To run it locally instead: the browser needs the files served over http (module scripts don't load from `file://`).
 From this folder:
 
@@ -59,3 +64,5 @@ Ideas that are not built yet (Modes, measuring, sharing links…) are in `BACKLO
   Add a new item by appending to `ITEMS`. `soft`, `under` and `collideH` tell the collision
   system which parts of an item are solid.
 - `app.js` – the 3D scene, room from the floorplan, dragging/stacking, inspector, saving.
+- `manifest.webmanifest`, `icons/` – web-app install (name, colours, icons; PNGs rendered from
+  `icons/icon.svg` with `rsvg-convert`).
